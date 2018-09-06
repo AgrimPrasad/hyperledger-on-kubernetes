@@ -144,11 +144,11 @@ vi remote-peer/scripts/env-remote-peer.sh
 ```
 
 * Edit the file `remote-peer/scripts/env-remote-peer.sh`. Update PEER_PREFIX to any name you choose. This will become 
-the name of your peer on the network. Try to make this unique within the network - your alias would work. Example: PEER_PREFIX="michaelpeer"
+the name of your peer on the network. Try to make this unique within the network - your alias would work. Example: PEER_PREFIX="agrim"
 * Don't change anything else.
 
 TIP: You'll be using the peer prefix you set above in many places. It will make your life easier
-if you do a search/replace in this README, replacing all 'michaelpeer' with your prefix. That way you can copy/paste 
+if you do a search/replace in this README, replacing all 'agrim' with your prefix. That way you can copy/paste 
 the commands I provide below instead of having to edit them.
 
 ### Step 4: Register Fabric identities with the Fabric certificate authority
@@ -187,7 +187,7 @@ kubectl logs register-p-org1-66bd5688b4-fhzmh -n org1
 ```
 
 You'll see something like this (edited for brevity), as the CA admin is enrolled with the intermediate CA, then the
-peer user (in this case 'michaelpeer1-org1') is registered with the CA:
+peer user (in this case 'agrim1-org1') is registered with the CA:
 
 ```bash
 $ kubectl logs register-p-org1-66bd5688b4-fhzmh -n org1
@@ -210,30 +210,30 @@ statusCode=201 (201 Created)
 2018/07/22 02:52:32 [INFO] Stored client certificate at /root/cas/ica-org1.org1/msp/signcerts/cert.pem
 2018/07/22 02:52:32 [INFO] Stored root CA certificate at /root/cas/ica-org1.org1/msp/cacerts/ica-org1-org1-7054.pem
 2018/07/22 02:52:32 [INFO] Stored intermediate CA certificates at /root/cas/ica-org1.org1/msp/intermediatecerts/ica-org1-org1-7054.pem
-##### 2018-07-22 02:52:32 Registering michaelpeer1-org1 with ica-org1.org1
+##### 2018-07-22 02:52:32 Registering agrim1-org1 with ica-org1.org1
 2018/07/22 02:52:32 [DEBUG] Home directory: /root/cas/ica-org1.org1
 .
 . 
 .
 2018/07/22 02:52:32 [DEBUG] Sending request
 POST https://ica-org1.org1:7054/register
-{"id":"michaelpeer1-org1","type":"peer","secret":"michaelpeer1-org1pw","affiliation":"org1"}
+{"id":"agrim1-org1","type":"peer","secret":"agrim1-org1pw","affiliation":"org1"}
 2018/07/22 02:52:32 [DEBUG] Received response
 statusCode=201 (201 Created)
-2018/07/22 02:52:32 [DEBUG] Response body result: map[secret:michaelpeer1-org1pw]
+2018/07/22 02:52:32 [DEBUG] Response body result: map[secret:agrim1-org1pw]
 2018/07/22 02:52:32 [DEBUG] The register request completed successfully
-Password: michaelpeer1-org1pw
+Password: agrim1-org1pw
 ##### 2018-07-22 02:52:32 Finished registering peer for org org1
 ```
 
 ### Step 5: Start the peer
 We are now ready to start the new peer. The peer runs as a pod in Kubernetes. Let's take a look at the pod spec before
-we deploy it. In the statement below, replace 'michaelpeer1' with the name of your peer. If you 
+we deploy it. In the statement below, replace 'agrim1' with the name of your peer. If you 
 are unsure, you can simply do 'ls k8s' to view the yaml files that were generated based on your selections, and find
 the file start starts with 'fabric-deployment-workshop-remote-peer-'.
 
 ```bash
-more k8s/fabric-deployment-workshop-remote-peer-michaelpeer1-org1.yaml
+more k8s/fabric-deployment-workshop-remote-peer-agrim1-org1.yaml
 ```
 
 There are a few things of interest in the pod yaml file:
@@ -246,22 +246,22 @@ So let's deploy the peer and check the logs. You may need to wait 30 seconds bef
 entries, as Kubernetes downloads and starts your container:
 
 ```bash
-kubectl apply -f k8s/fabric-deployment-workshop-remote-peer-michaelpeer1-org1.yaml
-kubectl logs deploy/michaelpeer1-org1 -n org1 -c michaelpeer1-org1
+kubectl apply -f k8s/fabric-deployment-workshop-remote-peer-agrim1-org1.yaml
+kubectl logs deploy/agrim1-org1 -n org1 -c agrim1-org1
 ```
 
 You'll see a large number of log entries, which you are free to look at. The most important entries are a few
 lines from the end of the log file. Look for these, and make sure there are no errors after these lines:
 
 ```bash
-2018-07-22 03:05:49.145 UTC [nodeCmd] serve -> INFO 1ca Starting peer with ID=[name:"michaelpeer1-org1" ], network ID=[dev], address=[100.96.2.149:7051]
-2018-07-22 03:05:49.146 UTC [nodeCmd] serve -> INFO 1cb Started peer with ID=[name:"michaelpeer1-org1" ], network ID=[dev], address=[100.96.2.149:7051]
+2018-07-22 03:05:49.145 UTC [nodeCmd] serve -> INFO 1ca Starting peer with ID=[name:"agrim1-org1" ], network ID=[dev], address=[100.96.2.149:7051]
+2018-07-22 03:05:49.146 UTC [nodeCmd] serve -> INFO 1cb Started peer with ID=[name:"agrim1-org1" ], network ID=[dev], address=[100.96.2.149:7051]
 ```
 
 If you can't find the entries, try grep:
 
 ```bash
-kubectl logs deploy/michaelpeer1-org1 -n org1 -c michaelpeer1-org1 | grep 'Started peer'
+kubectl logs deploy/agrim1-org1 -n org1 -c agrim1-org1 | grep 'Started peer'
 ```
 
 Your peer has started, but..... it's useless at this point. It hasn't joined any channels, it can't run chaincode
@@ -339,7 +339,7 @@ Fabric supports multiple blockchains within the same Fabric network, each blockc
 Interacting with peers using the 'peer' utility requires you to set ENV variables that provide context to the 'peer' utility.
 We'll use the following ENV variables to indicate which peer we want to interact with. You'll need to make the following changes:
 
-* Change 'michaelpeer' to match the name of your peer
+* Change 'agrim' to match the name of your peer
 
 You should still be inside the register container at this point. Copy all the variables below, and paste them into your 
 terminal window. If you exit the register container, and 'exec' back in later, remember to rerun these export statements.
@@ -348,8 +348,8 @@ terminal window. If you exit the register container, and 'exec' back in later, r
 export CORE_PEER_TLS_ENABLED=false
 export CORE_PEER_TLS_CLIENTAUTHREQUIRED=false
 export CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
-export CORE_PEER_ID=michaelpeer1-org1
-export CORE_PEER_ADDRESS=michaelpeer1-org1.org1:7051
+export CORE_PEER_ID=agrim1-org1
+export CORE_PEER_ADDRESS=agrim1-org1.org1:7051
 export CORE_PEER_LOCALMSPID=org1MSP
 export CORE_PEER_MSPCONFIGPATH=/data/orgs/org1/admin/msp
 ```
@@ -399,7 +399,7 @@ To view the peer logs, exit the 'register' container (by typing 'exit' on the co
 your EC2 bastion instance. Then enter (replacing the name of the peer with your own):
 
 ```bash
-kubectl logs deploy/michaelpeer1-org1 -n org1 -c michaelpeer1-org1
+kubectl logs deploy/agrim1-org1 -n org1 -c agrim1-org1
 ```
 
 ### Step 8: Install the marbles chaincode
@@ -585,14 +585,14 @@ necessary. Review and save the policy.
 
 Let's create the AWS Network Load Balancer (NLB) endpoints for the peer and the ca. The K8s YAML files to create these would 
 have been generated for you. On your EC2 bastion instance (make sure you're on the EC2 instance, and not 'exec'd into the register
-container) replace the org numbers below to match yours, and the name of the peer (i.e. michaelpeer) to match your own. 
+container) replace the org numbers below to match yours, and the name of the peer (i.e. agrim) to match your own. 
 These files should already exist in the k8s/ directory:
 
 ```bash
 cd
 cd hyperledger-on-kubernetes
 kubectl apply -f k8s/fabric-nlb-ca-org1.yaml
-kubectl apply -f k8s/fabric-nlb-workshop-remote-peer-michaelpeer1-org1.yaml
+kubectl apply -f k8s/fabric-nlb-workshop-remote-peer-agrim1-org1.yaml
 ```
 
 Check whether the service endpoints were created. You should see the start of a DNS endpoint in the EXTERNAL-IP column. If
@@ -604,8 +604,8 @@ NAME                    TYPE           CLUSTER-IP       EXTERNAL-IP        PORT(
 ica-notls-org1          NodePort       10.100.5.225     <none>             7054:30822/TCP                  1d
 ica-notls-org1-nlb      LoadBalancer   10.100.186.98    a6a8a76dd9dec...   7054:30874/TCP                  1d
 ica-org1                NodePort       10.100.17.167    <none>             7054:30821/TCP                  1d
-michaelpeer1-org1       NodePort       10.100.104.218   <none>             7051:30751/TCP,7052:30752/TCP   1d
-michaelpeer1-org1-nlb   LoadBalancer   10.100.103.133   a6abb6a419dec...   7051:32703/TCP                  1d
+agrim1-org1       NodePort       10.100.104.218   <none>             7051:30751/TCP,7052:30752/TCP   1d
+agrim1-org1-nlb   LoadBalancer   10.100.103.133   a6abb6a419dec...   7051:32703/TCP                  1d
 rca-org1                NodePort       10.100.34.72     <none>             7054:30800/TCP                  1d
 ```
 
@@ -681,7 +681,7 @@ curl  https://raw.githubusercontent.com/aws-samples/hyperledger-on-kubernetes/ma
 
 Still in the config directory, edit connection_profile_eks.json:
 
-* Do a global search & replace on 'michaelpeer', replacing it with your peer name
+* Do a global search & replace on 'agrim', replacing it with your peer name
 * In the 'replace' commands below, make sure you do not change the port number, nor remove the protocol (e.g. grpc://)
 * Replace the orderer URL with the NLB endpoint provided by your facilitator (The same one you used in Step 10. See the 
 statement 'export ORDERER_CONN_ARGS='). If the facilitator has already updated this in the README, the address below
@@ -698,7 +698,7 @@ running `kubectl describe svc <your peer service name> -n org1`
 
 ```json
     "peers": {
-        "michaelpeer1-org1.org1": {
+        "agrim1-org1.org1": {
             "url": "grpc://a55e52d7d93c511e8a5200a2330c2ef3-25d11c6db68acd98.elb.us-east-1.amazonaws.com:7051",
             "eventUrl": "grpc://a55e52d7d93c511e8a5200a2330c2ef3-25d11c6db68acd98.elb.us-east-1.amazonaws.com:7052",
 ```
